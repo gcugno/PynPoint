@@ -357,8 +357,12 @@ class ContrastCurveModule(ProcessingModule):
                         break
 
                 count += 1
-                print 'list_mag =',list_mag
-                print 'list_fpf =',list_fpf
+
+                sys.stdout.write('list_mag = ' + str(list_mag))
+                sys.stdout.write('list_fpf = ' + str(list_fpf))
+                sys.stdout.flush()
+                #print 'list_mag =',list_mag
+                #print 'list_fpf =',list_fpf
 
         result = np.column_stack((pos_r*pixscale,
                                   np.nanmean(fake_mag, axis=1),
