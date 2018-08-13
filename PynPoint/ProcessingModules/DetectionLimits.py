@@ -198,6 +198,9 @@ class ContrastCurveModule(ProcessingModule):
 
         for m, sep in enumerate(pos_r):
             fpf_threshold = student_fpf(self.m_sigma, sep, self.m_aperture, self.m_ignore)
+
+            sys.stdout.write('fpf_threshold = ' + str(fpf_threshold))
+
             fake_fpf[m] = fpf_threshold
 
             for n, ang in enumerate(pos_t):
@@ -330,10 +333,10 @@ class ContrastCurveModule(ProcessingModule):
                             sys.stdout.write('list_fpf = ' + str(list_fpf) + '\n\n')
                             sys.stdout.flush()
 
-
-                            list_fpf = []
-                            list_mag = [list_mag[-3]]
                             mag_step /= 2.
+                            list_fpf = [list_fpf[-3]]
+                            list_mag = [list_mag[-3],list_mag[-3] + mag_step]
+
 
                         else:
                             if list_mag[-1]-mag_step in list_mag:
