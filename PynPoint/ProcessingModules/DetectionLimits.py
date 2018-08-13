@@ -7,6 +7,7 @@ import sys
 import warnings
 
 import numpy as np
+import datetime
 
 from scipy.interpolate import interp1d
 from scipy.stats import t
@@ -371,6 +372,7 @@ class ContrastCurveModule(ProcessingModule):
                         break
 
                 count += 1
+                sys.stdout("time: " + datetime.datetime.now() + "\n\n")
 
         result = np.column_stack((pos_r*pixscale,
                                   np.nanmean(fake_mag, axis=1),
