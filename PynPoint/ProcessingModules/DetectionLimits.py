@@ -344,6 +344,12 @@ class ContrastCurveModule(ProcessingModule):
                         mag_step = 0.1
 
                     iteration += 1
+                    
+                    sys.stdout.write('list_mag = ' + str(list_mag))
+                    sys.stdout.write('list_fpf = ' + str(list_fpf))
+                    sys.stdout.flush()
+                    #print 'list_mag =',list_mag
+                    #print 'list_fpf =',list_fpf
 
                     if iteration == 50:
                         warnings.warn("ContrastModule could not converge at the position of "
@@ -357,12 +363,6 @@ class ContrastCurveModule(ProcessingModule):
                         break
 
                 count += 1
-
-                sys.stdout.write('list_mag = ' + str(list_mag))
-                sys.stdout.write('list_fpf = ' + str(list_fpf))
-                sys.stdout.flush()
-                #print 'list_mag =',list_mag
-                #print 'list_fpf =',list_fpf
 
         result = np.column_stack((pos_r*pixscale,
                                   np.nanmean(fake_mag, axis=1),
