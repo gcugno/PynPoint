@@ -199,7 +199,7 @@ class ContrastCurveModule(ProcessingModule):
         for m, sep in enumerate(pos_r):
             fpf_threshold = student_fpf(self.m_sigma, sep, self.m_aperture, self.m_ignore)
 
-            sys.stdout.write('fpf_threshold = ' + str(fpf_threshold))
+            sys.stdout.write('fpf_threshold = ' + str(fpf_threshold) + '\n')
 
             fake_fpf[m] = fpf_threshold
 
