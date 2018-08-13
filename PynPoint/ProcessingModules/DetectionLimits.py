@@ -326,6 +326,11 @@ class ContrastCurveModule(ProcessingModule):
                                           "increases. Adjusting magnitude to %s and step size "
                                           "to %s" % (list_mag[-3], mag_step/2.))
 
+                            sys.stdout.write('list_mag = ' + str(list_mag) + '\n')
+                            sys.stdout.write('list_fpf = ' + str(list_fpf) + '\n\n')
+                            sys.stdout.flush()
+
+
                             list_fpf = []
                             list_mag = [list_mag[-3]]
                             mag_step /= 2.
@@ -344,9 +349,9 @@ class ContrastCurveModule(ProcessingModule):
                         mag_step = 0.1
 
                     iteration += 1
-                    
-                    sys.stdout.write('list_mag = ' + str(list_mag))
-                    sys.stdout.write('list_fpf = ' + str(list_fpf))
+
+                    sys.stdout.write('list_mag = ' + str(list_mag) + '\n')
+                    sys.stdout.write('list_fpf = ' + str(list_fpf) + '\n')
                     sys.stdout.flush()
                     #print 'list_mag =',list_mag
                     #print 'list_fpf =',list_fpf
