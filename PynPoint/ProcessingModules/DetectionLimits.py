@@ -372,7 +372,7 @@ class ContrastCurveModule(ProcessingModule):
                         break
 
                 count += 1
-                sys.stdout("time: " + datetime.datetime.now() + "\n\n")
+                sys.stdout("time: " + str(datetime.datetime.now()) + "\n\n")
 
         result = np.column_stack((pos_r*pixscale,
                                   np.nanmean(fake_mag, axis=1),
