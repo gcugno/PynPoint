@@ -1,9 +1,9 @@
 .. _api:
 
-API
-===
+API Documentation
+=================
 
 .. toctree::
    :maxdepth: 4
 
-   PynPoint
+   pynpoint

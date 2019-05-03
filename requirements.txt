@@ -1,15 +1,14 @@
-configparser
-h5py==2.6.0
-numpy
-numba==0.37.0
-scipy==1.1.0
-astropy<3.0.0
-photutils
-scikit-image==0.14.0
-scikit-learn
-opencv-python
-statsmodels==0.8.0
-PyWavelets
-matplotlib
-emcee
-ephem
+six ~= 1.12
+configparser ~= 3.5
+h5py ~= 2.8
+numpy ~= 1.15
+numba ~= 0.40
+scipy ~= 1.1
+astropy ~= 2.0
+photutils ~= 0.4
+scikit-image ~= 0.14
+scikit-learn ~= 0.20
+opencv-python ~= 3.4
+statsmodels ~= 0.9
+PyWavelets ~= 1.0
+emcee ~= 2.2
