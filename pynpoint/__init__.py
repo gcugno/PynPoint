@@ -17,14 +17,17 @@ from pynpoint.processing.basic import SubtractImagesModule, \
                                       AddImagesModule, \
                                       RotateImagesModule
 
-from pynpoint.processing.centering import StarExtractionModule, \
-                                          StarAlignmentModule, \
+from pynpoint.processing.centering import StarAlignmentModule, \
                                           StarCenteringModule, \
+                                          FitCenterModule, \
                                           ShiftImagesModule, \
                                           WaffleCenteringModule
 
 from pynpoint.processing.darkflat import DarkCalibrationModule, \
                                          FlatCalibrationModule
+
+from pynpoint.processing.extract import StarExtractionModule, \
+                                        ExtractBinaryModule
 
 from pynpoint.processing.fluxposition import FakePlanetModule, \
                                              SimplexMinimizationModule, \
@@ -38,7 +41,8 @@ from pynpoint.processing.frameselection import RemoveFramesModule, \
                                                RemoveStartFramesModule, \
                                                ImageStatisticsModule
 
-from pynpoint.processing.limits import ContrastCurveModule
+from pynpoint.processing.limits import ContrastCurveModule, \
+                                       MassLimitsModule
 
 from pynpoint.processing.pcabackground import PCABackgroundPreparationModule, \
                                               PCABackgroundSubtractionModule, \
@@ -83,6 +87,8 @@ from pynpoint.readwrite.textwriting import AttributeWritingModule, \
 
 from pynpoint.readwrite.textreading import ParangReadingModule, \
                                            AttributeReadingModule
+
+from pynpoint.readwrite.nearreading import NearReadingModule
 
 warnings.simplefilter('always', DeprecationWarning)
 

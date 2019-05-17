@@ -2,19 +2,16 @@
 Modules for accessing data and attributes in the central database.
 """
 
-from __future__ import absolute_import
-
-import warnings
 import os
+import warnings
 
 from abc import ABCMeta, abstractmethod
 
-import six
 import h5py
 import numpy as np
 
 
-class DataStorage(object):
+class DataStorage:
     """
     Instances of DataStorage manage to open and close the Pypeline HDF5 databases. They have an
     internal h5py data bank (self.m_data_bank) which gives direct access to the data if the storage
@@ -77,7 +74,7 @@ class DataStorage(object):
             self.m_open = False
 
 
-class Port(six.with_metaclass(ABCMeta)):
+class Port(metaclass=ABCMeta):
     """
     Abstract interface and implementation of common functionality of the InputPort, OutputPort, and
     ConfigPort. Each Port has a internal tag which is its key to a dataset in the DataStorage. If
@@ -110,7 +107,7 @@ class Port(six.with_metaclass(ABCMeta)):
             None
         """
 
-        assert isinstance(tag, str), "Port tag needs to be a string."
+        assert isinstance(tag, str), 'Port tag needs to be a string.'
 
         self._m_tag = tag
         self._m_data_storage = data_storage_in
@@ -129,24 +126,10 @@ class Port(six.with_metaclass(ABCMeta)):
 
         return self._m_tag
 
-    def close_port(self):
-        """
-        Closes the connection to the Data Storage and force it to save the data to the hard drive.
-        All data that was accessed using the port is cleaned from the memory.
-
-        Returns
-        -------
-        NoneType
-            None
-        """
-
-        if self._m_data_base_active:
-            self._m_data_storage.close_connection()
-            self._m_data_base_active = False
-
     def open_port(self):
         """
-        Opens the connection to the Data Storage and activates its data bank.
+        Opens the connection to the :class:`~pynpoint.core.dataio.DataStorage` and activates its
+        data bank.
 
         Returns
         -------
@@ -157,6 +140,22 @@ class Port(six.with_metaclass(ABCMeta)):
         if not self._m_data_base_active:
             self._m_data_storage.open_connection()
             self._m_data_base_active = True
+
+    def close_port(self):
+        """
+        Closes the connection to the :class:`~pynpoint.core.dataio.DataStorage` and forces it to
+        save the data to the hard drive. All data that was accessed using the port is cleaned from
+        the memory.
+
+        Returns
+        -------
+        NoneType
+            None
+        """
+
+        if self._m_data_base_active:
+            self._m_data_storage.close_connection()
+            self._m_data_base_active = False
 
     def set_database_connection(self,
                                 data_base_in):
@@ -179,7 +178,7 @@ class Port(six.with_metaclass(ABCMeta)):
 
 class ConfigPort(Port):
     """
-    ConfigPort can be used to read the "config" tag from a (HDF5) database. This tag contains
+    ConfigPort can be used to read the 'config' tag from a (HDF5) database. This tag contains
     the central settings used by PynPoint, as well as the relevant FITS header keywords. You can
     use a ConfigPort instance to access a single attribute of the dataset using get_attribute().
     """
@@ -195,7 +194,7 @@ class ConfigPort(Port):
 
         .. code-block:: python
 
-            memory = self._m_config_port.get_attribute("MEMORY")
+            memory = self._m_config_port.get_attribute('MEMORY')
 
         Parameters
         ----------
@@ -216,8 +215,8 @@ class ConfigPort(Port):
 
         super(ConfigPort, self).__init__(tag, data_storage_in)
 
-        if tag != "config":
-            raise ValueError("The tag name of the central configuration should be 'config'.")
+        if tag != 'config':
+            raise ValueError('The tag name of the central configuration should be \'config\'.')
 
     def _check_status_and_activate(self):
         """
@@ -230,7 +229,7 @@ class ConfigPort(Port):
         """
 
         if self._m_data_storage is None:
-            warnings.warn("ConfigPort can not load data unless a database is connected.")
+            warnings.warn('ConfigPort can not load data unless a database is connected.')
             status = False
 
         else:
@@ -243,7 +242,7 @@ class ConfigPort(Port):
 
     def _check_if_data_exists(self):
         """
-        Internal function which checks if data exists for the "config" tag.
+        Internal function which checks if data exists for the 'config' tag.
 
         Returns
         -------
@@ -251,10 +250,10 @@ class ConfigPort(Port):
             Returns True if data exists, False if not.
         """
 
-        return "config" in self._m_data_storage.m_data_bank
+        return 'config' in self._m_data_storage.m_data_bank
 
     def _check_error_cases(self):
-        """"
+        """'
         Internal function which checks the error cases.
         """
 
@@ -262,7 +261,7 @@ class ConfigPort(Port):
             status = False
 
         elif self._check_if_data_exists() is False:
-            warnings.warn("No data under the tag which is linked by the ConfigPort.")
+            warnings.warn('No data under the tag which is linked by the ConfigPort.')
             status = False
 
         else:
@@ -289,11 +288,11 @@ class ConfigPort(Port):
         if not self._check_error_cases():
             attr_val = None
 
-        elif name in self._m_data_storage.m_data_bank["config"].attrs:
-            attr_val = self._m_data_storage.m_data_bank["config"].attrs[name]
+        elif name in self._m_data_storage.m_data_bank['config'].attrs:
+            attr_val = self._m_data_storage.m_data_bank['config'].attrs[name]
 
         else:
-            warnings.warn("The attribute '%s' was not found." % name)
+            warnings.warn(f'The attribute \'{name}\' was not found.')
             attr_val = None
 
         return attr_val
@@ -312,7 +311,7 @@ class InputPort(Port):
 
         .. code-block:: python
 
-            in_port = InputPort("tag")
+            in_port = InputPort('tag')
             data = in_port[0, :, :] # returns the first 2D image of a 3D image stack.
 
     (More information about how 1D, 2D, and 3D data is organized can be found in the documentation
@@ -354,13 +353,13 @@ class InputPort(Port):
 
         super(InputPort, self).__init__(tag, data_storage_in)
 
-        if tag == "config":
-            raise ValueError("The tag name 'config' is reserved for the central configuration "
-                             "of PynPoint.")
+        if tag == 'config':
+            raise ValueError('The tag name \'config\' is reserved for the central configuration '
+                             'of PynPoint.')
 
-        if tag == "fits_header":
-            raise ValueError("The tag name 'fits_header' is reserved for storage of the FITS "
-                             "headers.")
+        if tag == 'fits_header':
+            raise ValueError('The tag name \'fits_header\' is reserved for storage of the FITS '
+                             'headers.')
 
     def _check_status_and_activate(self):
         """
@@ -373,7 +372,7 @@ class InputPort(Port):
         """
 
         if self._m_data_storage is None:
-            warnings.warn("InputPort can not load data unless a database is connected.")
+            warnings.warn('InputPort can not load data unless a database is connected.')
             status = False
 
         else:
@@ -402,7 +401,7 @@ class InputPort(Port):
             status = False
 
         elif self._check_if_data_exists() is False:
-            warnings.warn("No data under the tag which is linked by the InputPort.")
+            warnings.warn('No data under the tag which is linked by the InputPort.')
             status = False
 
         else:
@@ -522,13 +521,13 @@ class InputPort(Port):
                 # static attribute
                 attr_val = self._m_data_storage.m_data_bank[self._m_tag].attrs[name]
 
-            elif "header_" + self._m_tag + "/" + name in self._m_data_storage.m_data_bank:
+            elif 'header_' + self._m_tag + '/' + name in self._m_data_storage.m_data_bank:
                 # non-static attribute
-                attribute = "header_" + self._m_tag + "/" + name
+                attribute = 'header_' + self._m_tag + '/' + name
                 attr_val = np.asarray(self._m_data_storage.m_data_bank[attribute][...])
 
             else:
-                warnings.warn("The attribute '%s' was not found." % name)
+                warnings.warn(f'The attribute \'{name}\' was not found.')
                 attr_val = None
 
         return attr_val
@@ -569,8 +568,8 @@ class InputPort(Port):
         else:
             attr_key = []
 
-            if "header_" + self._m_tag + "/" in self._m_data_storage.m_data_bank:
-                for key in self._m_data_storage.m_data_bank["header_" + self._m_tag + "/"]:
+            if 'header_' + self._m_tag + '/' in self._m_data_storage.m_data_bank:
+                for key in self._m_data_storage.m_data_bank['header_' + self._m_tag + '/']:
                     attr_key.append(key)
 
             else:
@@ -592,7 +591,7 @@ class OutputPort(Port):
 
         .. code-block:: python
 
-            out_port = OutputPort("Some_tag")
+            out_port = OutputPort('Some_tag')
             data = np.ones(200, 200) # 2D image filled with ones
             out_port[0,:,:] = data # Sets the first 2D image of a 3D image stack
 
@@ -642,13 +641,13 @@ class OutputPort(Port):
 
         self.m_activate = activate_init
 
-        if tag == "config":
-            raise ValueError("The tag name 'config' is reserved for the central configuration "
-                             "of PynPoint.")
+        if tag == 'config':
+            raise ValueError('The tag name \'config\' is reserved for the central configuration '
+                             'of PynPoint.')
 
-        if tag == "fits_header":
-            raise ValueError("The tag name 'fits_header' is reserved for storage of the FITS "
-                             "headers.")
+        if tag == 'fits_header':
+            raise ValueError('The tag name \'fits_header\' is reserved for storage of the FITS '
+                             'headers.')
 
     def _check_status_and_activate(self):
         """
@@ -664,7 +663,7 @@ class OutputPort(Port):
             status = False
 
         elif self._m_data_storage is None:
-            warnings.warn("OutputPort can not store data unless a database is connected.")
+            warnings.warn('OutputPort can not store data unless a database is connected.')
             status = False
 
         else:
@@ -738,12 +737,12 @@ class OutputPort(Port):
                 data_shape = (None, first_data.shape[0], first_data.shape[1])
                 first_data = first_data[np.newaxis, :, :]
 
-        try:
-            if isinstance(first_data[0], str):
-                first_data = np.array(first_data, dtype="|S")
+        if first_data.size == 0:
+            warnings.warn(f'The new dataset that is stored under the tag name \'{tag}\' is empty.')
 
-        except IndexError:
-            warnings.warn("The dataset that is stored under the tag name '"+tag+"' is empty.")
+        else:
+            if isinstance(first_data[0], str):
+                first_data = np.array(first_data, dtype='|S')
 
         self._m_data_storage.m_data_bank.create_dataset(tag,
                                                         data=first_data,
@@ -784,7 +783,7 @@ class OutputPort(Port):
             # NO -> database entry exists
             if keep_attributes:
                 # we have to copy all attributes since deepcopy is not supported
-                for key, value in six.iteritems(self._m_data_storage.m_data_bank[tag].attrs):
+                for key, value in self._m_data_storage.m_data_bank[tag].attrs.items():
                     tmp_attributes[key] = value
 
             # remove database entry
@@ -794,7 +793,7 @@ class OutputPort(Port):
         self._initialize_database(data, tag, data_dim=data_dim)
 
         if keep_attributes:
-            for key, value in six.iteritems(tmp_attributes):
+            for key, value in tmp_attributes.items():
                 self._m_data_storage.m_data_bank[tag].attrs[key] = value
 
     def _append_key(self,
@@ -868,12 +867,13 @@ class OutputPort(Port):
             # we always append in axis one independent of the dimension
             # 1D case
 
-            try:
-                if isinstance(data[0], str):
-                    data = np.array(data, dtype="|S")
+            if data.size == 0:
+                warnings.warn(f'The dataset that is appended under the tag name \'{tag}\' ' \
+                              f'is empty.')
 
-            except IndexError:
-                warnings.warn("The dataset that is stored under the tag name '"+tag+"' is empty.")
+            else:
+                if isinstance(data[0], str):
+                    data = np.array(data, dtype='|S')
 
             self._m_data_storage.m_data_bank[tag].resize(tmp_shape[0] + data.shape[0], axis=0)
             self._m_data_storage.m_data_bank[tag][tmp_shape[0]::] = data
@@ -888,8 +888,8 @@ class OutputPort(Port):
             return None
 
         # NO -> Error message
-        raise ValueError("The port tag '%s' is already used with a different data type. The "
-                         "'force' parameter can be used to replace the tag." % self._m_tag)
+        raise ValueError(f'The port tag \'{self._m_tag}\' is already used with a different data '
+                         f'type. The \'force\' parameter can be used to replace the tag.')
 
     def __setitem__(self,
                     key,
@@ -1092,14 +1092,14 @@ class OutputPort(Port):
         if self._check_status_and_activate():
 
             if self._m_tag not in self._m_data_storage.m_data_bank:
-                warnings.warn("Can not store attribute if data tag does not exist.")
+                warnings.warn('Can not store attribute if data tag does not exist.')
 
             else:
                 if static:
                     self._m_data_storage.m_data_bank[self._m_tag].attrs[name] = value
 
                 else:
-                    self._set_all_key(tag=("header_" + self._m_tag + "/" + name),
+                    self._set_all_key(tag=('header_' + self._m_tag + '/' + name),
                                       data=np.asarray(value))
 
     def append_attribute_data(self,
@@ -1123,7 +1123,7 @@ class OutputPort(Port):
 
         if self._check_status_and_activate():
 
-            self._append_key(tag=("header_" + self._m_tag + "/" + name),
+            self._append_key(tag=('header_' + self._m_tag + '/' + name),
                              data=np.asarray([value, ]))
 
     def copy_attributes(self,
@@ -1148,12 +1148,12 @@ class OutputPort(Port):
         if self._check_status_and_activate() and input_port.tag != self._m_tag:
 
             # link non-static attributes
-            if "header_" + input_port.tag + "/" in self._m_data_storage.m_data_bank:
+            if 'header_' + input_port.tag + '/' in self._m_data_storage.m_data_bank:
 
-                for attr_name, attr_data in six.iteritems(self._m_data_storage\
-                        .m_data_bank["header_" + input_port.tag + "/"]):
+                for attr_name, attr_data in self._m_data_storage\
+                        .m_data_bank['header_' + input_port.tag + '/'].items():
 
-                    database_name = "header_"+self._m_tag+"/"+attr_name
+                    database_name = 'header_'+self._m_tag+'/'+attr_name
 
                     # overwrite existing header information in the database
                     if database_name in self._m_data_storage.m_data_bank:
@@ -1163,7 +1163,7 @@ class OutputPort(Port):
 
             # copy static attributes
             attributes = input_port.get_all_static_attributes()
-            for attr_name, attr_val in six.iteritems(attributes):
+            for attr_name, attr_val in attributes.items():
                 self.add_attribute(attr_name, attr_val)
 
             self._m_data_storage.m_data_bank.flush()
@@ -1191,12 +1191,12 @@ class OutputPort(Port):
             if name in self._m_data_storage.m_data_bank[self._m_tag].attrs:
                 del self._m_data_storage.m_data_bank[self._m_tag].attrs[name]
 
-            elif "header_"+self._m_tag+"/"+name in self._m_data_storage.m_data_bank:
+            elif 'header_'+self._m_tag+'/'+name in self._m_data_storage.m_data_bank:
                 # remove non-static attribute
-                del self._m_data_storage.m_data_bank[("header_" + self._m_tag + "/" + name)]
+                del self._m_data_storage.m_data_bank[('header_' + self._m_tag + '/' + name)]
 
             else:
-                warnings.warn("Attribute '%s' does not exist and could not be deleted." % name)
+                warnings.warn(f'Attribute \'{name}\' does not exist and could not be deleted.')
 
     def del_all_attributes(self):
         """
@@ -1215,8 +1215,8 @@ class OutputPort(Port):
                 self._m_data_storage.m_data_bank[self._m_tag].attrs.clear()
 
             # non-static attributes
-            if "header_" + self._m_tag + "/" in self._m_data_storage.m_data_bank:
-                del self._m_data_storage.m_data_bank[("header_" + self._m_tag + "/")]
+            if 'header_' + self._m_tag + '/' in self._m_data_storage.m_data_bank:
+                del self._m_data_storage.m_data_bank[('header_' + self._m_tag + '/')]
 
     def check_static_attribute(self,
                                name,
@@ -1272,7 +1272,7 @@ class OutputPort(Port):
         if not self._check_status_and_activate():
             return None
 
-        group = "header_" + self._m_tag + "/"
+        group = 'header_' + self._m_tag + '/'
 
         if group in self._m_data_storage.m_data_bank:
             if name in self._m_data_storage.m_data_bank[group]:
@@ -1305,12 +1305,12 @@ class OutputPort(Port):
             None
         """
 
-        self.add_attribute("History: " + module, history)
+        self.add_attribute('History: ' + module, history)
 
     def flush(self):
         """
-        Forces the DataStorage to save all data from the memory to the hard drive without closing
-        it.
+        Forces the :class:`~pynpoint.core.dataio.DataStorage` to save all data from the memory to
+        the hard drive without closing the :class:`~pynpoint.core.dataio.OutputPort`.
 
         Returns
         -------

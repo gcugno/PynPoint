@@ -2,12 +2,10 @@
 Pipeline modules for basic image operations.
 """
 
-from __future__ import absolute_import
-
 import sys
+import time
 
 from scipy.ndimage import rotate
-from six.moves import range
 
 from pynpoint.core.processing import ProcessingModule
 from pynpoint.util.module import progress, memory_frames
@@ -24,8 +22,6 @@ class SubtractImagesModule(ProcessingModule):
                  image_out_tag="im_arr_subtract",
                  scaling=1.):
         """
-        Constructor of SubtractImagesModule.
-
         Parameters
         ----------
         image_in_tags : tuple(str, str)
@@ -74,8 +70,9 @@ class SubtractImagesModule(ProcessingModule):
 
         frames = memory_frames(memory, nimages)
 
+        start_time = time.time()
         for i, _ in enumerate(frames[:-1]):
-            progress(i, len(frames[:-1]), "Running SubtractImagesModule...")
+            progress(i, len(frames[:-1]), "Running SubtractImagesModule...", start_time)
 
             images1 = self.m_image_in1_port[frames[i]:frames[i+1], ]
             images2 = self.m_image_in2_port[frames[i]:frames[i+1], ]
@@ -102,8 +99,6 @@ class AddImagesModule(ProcessingModule):
                  image_out_tag="im_arr_add",
                  scaling=1.):
         """
-        Constructor of AddImagesModule.
-
         Parameters
         ----------
         image_in_tags : tuple(str, str)
@@ -152,8 +147,9 @@ class AddImagesModule(ProcessingModule):
 
         frames = memory_frames(memory, nimages)
 
+        start_time = time.time()
         for i, _ in enumerate(frames[:-1]):
-            progress(i, len(frames[:-1]), "Running AddImagesModule...")
+            progress(i, len(frames[:-1]), "Running AddImagesModule...", start_time)
 
             images1 = self.m_image_in1_port[frames[i]:frames[i+1], ]
             images2 = self.m_image_in2_port[frames[i]:frames[i+1], ]
@@ -180,8 +176,6 @@ class RotateImagesModule(ProcessingModule):
                  image_in_tag="im_arr",
                  image_out_tag="im_arr_rot"):
         """
-        Constructor of RotateImagesModule.
-
         Parameters
         ----------
         scaling : float
@@ -230,8 +224,9 @@ class RotateImagesModule(ProcessingModule):
 
         frames = memory_frames(memory, nimages)
 
+        start_time = time.time()
         for i, _ in enumerate(frames[:-1]):
-            progress(i, len(frames[:-1]), "Running RotateImagesModule...")
+            progress(i, len(frames[:-1]), "Running RotateImagesModule...", start_time)
 
             images = self.m_image_in_port[frames[i]:frames[i+1], ]
 

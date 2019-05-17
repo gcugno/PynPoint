@@ -3,13 +3,15 @@ language: python
 dist: xenial
 
 python:
-  - 2.7
   - 3.6
   - 3.7
 
 env:
   - NUMBA_DISABLE_JIT=1
   # - COVERALLS_PARALLEL=true
+
+before_install:
+  - sudo apt-get install ncompress
 
 install:
   - pip install -r requirements.txt

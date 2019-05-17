@@ -2,9 +2,8 @@
 Pipeline modules for PSF subtraction.
 """
 
-from __future__ import absolute_import
-
 import sys
+import time
 import math
 import warnings
 
@@ -44,8 +43,6 @@ class PcaPsfSubtractionModule(ProcessingModule):
                  extra_rot=0.,
                  subtract_mean=True):
         """
-        Constructor of PcaPsfSubtractionModule.
-
         Parameters
         ----------
         pca_numbers : list(int, ), tuple(int, ), or numpy.ndarray
@@ -182,9 +179,9 @@ class PcaPsfSubtractionModule(ProcessingModule):
         NoneType
             None
         """
-
+        start_time = time.time()
         for i, pca_number in enumerate(self.m_components):
-            progress(i, len(self.m_components), "Creating residuals...")
+            progress(i, len(self.m_components), "Creating residuals...", start_time)
 
             parang = -1.*self.m_star_in_port.get_attribute("PARANG") + self.m_extra_rot
 
@@ -386,8 +383,6 @@ class ClassicalADIModule(ProcessingModule):
                  res_out_tag="residuals",
                  stack_out_tag="stacked"):
         """
-        Constructor of ClassicalADIModule.
-
         Parameters
         ----------
         threshold : tuple(float, float, float)
@@ -493,7 +488,7 @@ class ClassicalADIModule(ProcessingModule):
         self.apply_function_to_images(_subtract_psf,
                                       self.m_image_in_port,
                                       self.m_res_out_port,
-                                      "Running ClassicalADIModule...",
+                                      "Running ClassicalADIModule",
                                       func_args=(parang_thres, self.m_nreference, reference))
 
         im_res = self.m_res_inout_port.get_all()

@@ -2,10 +2,8 @@
 Pipeline modules for PCA-based background subtraction.
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import sys
+import time
 import math
 import warnings
 
@@ -13,8 +11,6 @@ import numpy as np
 
 from scipy.sparse.linalg import svds
 from scipy.optimize import curve_fit
-from six.moves import map
-from six.moves import range
 
 from pynpoint.core.processing import ProcessingModule
 from pynpoint.processing.resizing import CropImagesModule
@@ -36,8 +32,6 @@ class PCABackgroundPreparationModule(ProcessingModule):
                  mean_out_tag="im_arr_mean",
                  background_out_tag="im_arr_background"):
         """
-        Constructor of PCABackgroundPreparationModule.
-
         Parameters
         ----------
         dither : tuple(int, int, int)
@@ -172,8 +166,10 @@ class PCABackgroundPreparationModule(ProcessingModule):
 
         # Separate star and background cubes. Subtract mean background.
         count = 0
+
+        start_time = time.time()
         for i, item in enumerate(nframes):
-            progress(i, len(nframes), "Running PCABackgroundPreparationModule...")
+            progress(i, len(nframes), "Running PCABackgroundPreparationModule...", start_time)
 
             im_tmp = self.m_image_in_port[count:count+item, ]
 
@@ -242,7 +238,7 @@ class PCABackgroundPreparationModule(ProcessingModule):
         sys.stdout.write("Running PCABackgroundPreparationModule... [DONE]\n")
         sys.stdout.flush()
 
-        history = "frames = "+str(sum(star_nframes))+", "+str(len(background_nframes))
+        history = f"frames = {sum(star_nframes)}, {len(background_nframes)}"
         self.m_star_out_port.copy_attributes(self.m_image_in_port)
         self.m_star_out_port.add_history("PCABackgroundPreparationModule", history)
         self.m_star_out_port.add_attribute("NFRAMES", star_nframes, static=False)
@@ -289,8 +285,6 @@ class PCABackgroundSubtractionModule(ProcessingModule):
                  mask_out_tag=None,
                  **kwargs):
         """
-        Constructor of PCABackgroundSubtractionModule.
-
         Parameters
         ----------
         pca_number : int
@@ -482,8 +476,9 @@ class PCABackgroundSubtractionModule(ProcessingModule):
         sys.stdout.write(" [DONE]\n")
         sys.stdout.flush()
 
+        start_time = time.time()
         for i, _ in enumerate(frames[:-1]):
-            progress(i, len(frames[:-1]), "Calculating background model...")
+            progress(i, len(frames[:-1]), "Calculating background model...", start_time)
 
             im_star = self.m_star_in_port[frames[i]:frames[i+1], ]
 
@@ -507,7 +502,7 @@ class PCABackgroundSubtractionModule(ProcessingModule):
         sys.stdout.write("Calculating background model... [DONE]\n")
         sys.stdout.flush()
 
-        history = "PC number = "+str(self.m_pca_number)
+        history = f"PC number = {self.m_pca_number}"
         self.m_residuals_out_port.copy_attributes(self.m_star_in_port)
         self.m_residuals_out_port.add_history("PCABackgroundSubtractionModule", history)
         self.m_residuals_out_port.add_attribute("STAR_POSITION", star, static=False)
@@ -543,8 +538,6 @@ class DitheringBackgroundModule(ProcessingModule):
                  subtract_mean=False,
                  **kwargs):
         """
-        Constructor of DitheringBackgroundModule.
-
         Parameters
         ----------
         name_in : str

@@ -2,8 +2,6 @@
 Modules for reading data from a text file.
 """
 
-from __future__ import absolute_import
-
 import os
 import sys
 import warnings
@@ -26,8 +24,6 @@ class ParangReadingModule(ReadingModule):
                  data_tag="im_arr",
                  overwrite=False):
         """
-        Constructor of ParangReadingModule.
-
         Parameters
         ----------
         file_name : str
@@ -115,8 +111,6 @@ class AttributeReadingModule(ReadingModule):
                  data_tag="im_arr",
                  overwrite=False):
         """
-        Constructor of AttributeReadingModule.
-
         Parameters
         ----------
         file_name : str
