@@ -15,7 +15,7 @@ warnings.simplefilter("always")
 
 limit = 1e-10
 
-class TestImageResizing:
+class TestResizing:
 
     def setup_class(self):
 
@@ -112,13 +112,7 @@ class TestImageResizing:
                                 image_out_tag="add")
 
         self.pipeline.add_module(module)
-
-        with pytest.warns(UserWarning) as warning:
-            self.pipeline.run_module("add")
-
-        assert len(warning) == 1
-        assert warning[0].message.args[0] == "The dimensions of the output images (109, 107) " \
-                                             "are not equal. PynPoint only supports square images."
+        self.pipeline.run_module("add")
 
         data = self.pipeline.get_data("add")
         assert np.allclose(data[0, 50, 50], 0.02851872141873229, rtol=limit, atol=0.)
@@ -140,9 +134,8 @@ class TestImageResizing:
         assert np.allclose(np.mean(data), 0.00011848528804183087, rtol=limit, atol=0.)
         assert data.shape == (40, 91, 93)
 
-        database = h5py.File(self.test_dir+'PynPoint_database.hdf5', 'a')
-        database['config'].attrs['CPU'] = 4
-        database.close()
+        with h5py.File(self.test_dir+'PynPoint_database.hdf5', 'a') as hdf_file:
+            hdf_file['config'].attrs['CPU'] = 4
 
         self.pipeline.run_module("remove")
 
