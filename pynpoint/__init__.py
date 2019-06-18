@@ -73,6 +73,17 @@ from pynpoint.processing.timedenoising import CwtWaveletConfiguration, \
                                               WaveletTimeDenoisingModule, \
                                               TimeNormalizationModule
 
+from pynpoint.processing.spectralanalysis import SelectWavelengthRangeModule, \
+                                                NanSigmaFilterModule, \
+                                                IFUAlignCubesModule, \
+                                                IFUStellarSpectrumModule, \
+                                                IFUPSFSubtractionModule, \
+                                                FoldingModule, \
+                                                UnfoldingModule, \
+                                                IFUResidualsPCAModule, \
+                                                CrossCorrelationPreparationModule, \
+                                                CrossCorrelationModule
+
 from pynpoint.readwrite.fitsreading import FitsReadingModule
 
 from pynpoint.readwrite.fitswriting import FitsWritingModule
