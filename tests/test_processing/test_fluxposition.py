@@ -28,6 +28,8 @@ class TestFluxPosition:
 
         create_star_data(path=self.test_dir+'flux', npix_x=101, npix_y=101)
 
+        create_star_data(path=self.test_dir+'ref', npix_x=101, npix_y=101)
+
         create_star_data(path=self.test_dir+'psf',
                          npix_x=15,
                          npix_y=15,
@@ -55,7 +57,7 @@ class TestFluxPosition:
 
     def teardown_class(self):
 
-        remove_test_data(self.test_dir, folders=['flux', 'adi', 'psf'])
+        remove_test_data(self.test_dir, folders=['flux', 'adi', 'psf', 'ref'])
 
     def test_read_data(self):
 
@@ -94,6 +96,18 @@ class TestFluxPosition:
         assert np.allclose(data[0, 7, 7], 0.09806026673451182, rtol=limit, atol=0.)
         assert np.allclose(np.mean(data), 0.004444444429123135, rtol=limit, atol=0.)
         assert data.shape == (4, 15, 15)
+
+        module = FitsReadingModule(name_in='read4',
+                                   image_tag='ref',
+                                   input_dir=self.test_dir+'ref')
+
+        self.pipeline.add_module(module)
+        self.pipeline.run_module('read4')
+
+        data = self.pipeline.get_data('ref')
+        assert np.allclose(data[0, 50, 50], 0.0986064357966972, rtol=limit, atol=0.)
+        assert np.allclose(np.mean(data), 9.827812356946396e-05, rtol=limit, atol=0.)
+        assert data.shape == (40, 101, 101)
 
     def test_aperture_photometry(self):
 
@@ -171,7 +185,7 @@ class TestFluxPosition:
 
     def test_psf_subtraction(self):
 
-        module = PcaPsfSubtractionModule(pca_numbers=(2, ),
+        module = PcaPsfSubtractionModule(pca_numbers=[2, ],
                                          name_in='pca',
                                          images_in_tag='fake',
                                          reference_in_tag='fake',
@@ -211,14 +225,14 @@ class TestFluxPosition:
 
     def test_simplex_minimization(self):
 
-        module = SimplexMinimizationModule(position=(31., 49.),
-                                           magnitude=6.,
-                                           psf_scaling=-1.,
-                                           name_in='simplex',
+        module = SimplexMinimizationModule(name_in='simplex1',
                                            image_in_tag='fake',
                                            psf_in_tag='read',
                                            res_out_tag='simplex_res',
                                            flux_position_tag='flux_position',
+                                           position=(31, 49),
+                                           magnitude=6.,
+                                           psf_scaling=-1.,
                                            merit='hessian',
                                            aperture=0.1,
                                            sigma=0.,
@@ -226,24 +240,62 @@ class TestFluxPosition:
                                            pca_number=1,
                                            cent_size=0.1,
                                            edge_size=None,
-                                           extra_rot=0.)
+                                           extra_rot=0.,
+                                           reference_in_tag=None)
 
         self.pipeline.add_module(module)
-        self.pipeline.run_module('simplex')
+        self.pipeline.run_module('simplex1')
 
         data = self.pipeline.get_data('simplex_res')
         assert np.allclose(data[0, 50, 31], 0.00012976212788352575, rtol=limit, atol=0.)
-        assert np.allclose(data[42, 50, 31], 1.2141761821389107e-05, rtol=limit, atol=0.)
-        assert np.allclose(np.mean(data), 9.461337432531517e-09, rtol=limit, atol=0.)
-        assert data.shape == (43, 101, 101)
+        assert np.allclose(data[41, 50, 31], 1.7176632474300478e-05, rtol=limit, atol=0.)
+        assert np.allclose(np.mean(data), 9.470306099078656e-09, rtol=limit, atol=0.)
+        assert data.shape == (42, 101, 101)
 
         data = self.pipeline.get_data('flux_position')
-        assert np.allclose(data[42, 0], 31.6456737445356, rtol=limit, atol=0.)
-        assert np.allclose(data[42, 1], 49.9199601480223, rtol=limit, atol=0.)
-        assert np.allclose(data[42, 2], 0.49557152090327206, rtol=limit, atol=0.)
-        assert np.allclose(data[42, 3], 90.24985480686087, rtol=limit, atol=0.)
-        assert np.allclose(data[42, 4], 5.683191873535635, rtol=limit, atol=0.)
-        assert data.shape == (43, 6)
+        assert np.allclose(data[41, 0], 31.67747653034013, rtol=limit, atol=0.)
+        assert np.allclose(data[41, 1], 49.91874032275719, rtol=limit, atol=0.)
+        assert np.allclose(data[41, 2], 0.4947129988341501, rtol=limit, atol=0.)
+        assert np.allclose(data[41, 3], 90.25410288237038, rtol=limit, atol=0.)
+        assert np.allclose(data[41, 4], 5.691970059845411, rtol=limit, atol=0.)
+        assert data.shape == (42, 6)
+
+    def test_simplex_minimization_reference(self):
+
+        module = SimplexMinimizationModule(name_in='simplex2',
+                                           image_in_tag='fake',
+                                           psf_in_tag='read',
+                                           res_out_tag='simplex_res_ref',
+                                           flux_position_tag='flux_position_ref',
+                                           position=(31, 49),
+                                           magnitude=6.,
+                                           psf_scaling=-1.,
+                                           merit='sum',
+                                           aperture=0.1,
+                                           sigma=0.,
+                                           tolerance=0.1,
+                                           pca_number=1,
+                                           cent_size=0.1,
+                                           edge_size=None,
+                                           extra_rot=0.,
+                                           reference_in_tag='ref')
+
+        self.pipeline.add_module(module)
+        self.pipeline.run_module('simplex2')
+
+        data = self.pipeline.get_data('simplex_res_ref')
+        assert np.allclose(data[0, 50, 31], 0.00014188043631450017, rtol=limit, atol=0.)
+        assert np.allclose(data[35, 50, 31], 6.660723685443821e-05, rtol=limit, atol=0.)
+        assert np.allclose(np.mean(data), 1.3228426986034557e-06, rtol=limit, atol=0.)
+        assert data.shape == (44, 101, 101)
+
+        data = self.pipeline.get_data('flux_position_ref')
+        assert np.allclose(data[43, 0], 31.519027018276986, rtol=limit, atol=0.)
+        assert np.allclose(data[43, 1], 49.85541939005469, rtol=limit, atol=0.)
+        assert np.allclose(data[43, 2], 0.4990015399214498, rtol=limit, atol=0.)
+        assert np.allclose(data[43, 3], 90.44822801080721, rtol=limit, atol=0.)
+        assert np.allclose(data[43, 4], 5.9953709695084605, rtol=limit, atol=0.)
+        assert data.shape == (44, 6)
 
     def test_mcmc_sampling_gaussian(self):
 
@@ -300,8 +352,8 @@ class TestFluxPosition:
                                     psf_scaling=-1.,
                                     pca_number=1,
                                     aperture={'type':'circular',
-                                              'pos_x':7.0,
-                                              'pos_y':12.5,
+                                              'pos_x':7.,
+                                              'pos_y':12.,
                                               'radius':0.1},
                                     mask=None,
                                     extra_rot=0.,
@@ -325,7 +377,7 @@ class TestFluxPosition:
         single = self.pipeline.get_data('mcmc')
         single = single[:, 20:, :].reshape((-1, 3))
         assert np.allclose(np.median(single[:, 0]), 0.148, rtol=0., atol=0.01)
-        assert np.allclose(np.median(single[:, 1]), 0., rtol=0., atol=0.2)
+        assert np.allclose(np.median(single[:, 1]), 0., rtol=0., atol=0.5)
         assert np.allclose(np.median(single[:, 2]), 0., rtol=0., atol=0.1)
 
     def test_mcmc_sampling_poisson(self):
@@ -340,12 +392,10 @@ class TestFluxPosition:
                                     nsteps=150,
                                     psf_scaling=-1.,
                                     pca_number=1,
-                                    aperture={'type':'elliptical',
-                                              'pos_x':7.0,
-                                              'pos_y':12.5,
-                                              'semimajor':0.1,
-                                              'semiminor':0.1,
-                                              'angle':0.0},
+                                    aperture={'type':'circular',
+                                              'pos_x':7.,
+                                              'pos_y':12.,
+                                              'radius':0.1},
                                     mask=None,
                                     extra_rot=0.,
                                     scale=2.,
@@ -384,8 +434,8 @@ class TestFluxPosition:
                                     psf_scaling=-1.,
                                     pca_number=1,
                                     aperture={'type':'circular',
-                                              'pos_x':7.0,
-                                              'pos_y':12.5,
+                                              'pos_x':7.,
+                                              'pos_y':12.,
                                               'radius':0.1},
                                     mask=None,
                                     extra_rot=0.,
