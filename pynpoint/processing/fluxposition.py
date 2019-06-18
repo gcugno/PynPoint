@@ -3,7 +3,6 @@ Pipeline modules for photometric and astrometric measurements.
 """
 
 import sys
-import math
 import time
 import warnings
 
@@ -15,21 +14,12 @@ import emcee
 from typeguard import typechecked
 from scipy.optimize import minimize
 from sklearn.decomposition import PCA
-<<<<<<< HEAD
-from skimage.feature import hessian_matrix
-=======
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 from photutils import aperture_photometry, CircularAperture
 
 from pynpoint.core.processing import ProcessingModule
 from pynpoint.util.analysis import fake_planet, merit_function, false_alarm
 from pynpoint.util.image import create_mask, polar_to_cartesian, cartesian_to_polar, \
-<<<<<<< HEAD
-                                center_subpixel, select_annulus, rotate_coordinates, \
-                                pixel_distance
-=======
                                 center_subpixel, rotate_coordinates
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 from pynpoint.util.mcmc import lnprob
 from pynpoint.util.module import progress, memory_frames
 from pynpoint.util.psf import pca_psf_subtraction
@@ -185,30 +175,18 @@ class SimplexMinimizationModule(ProcessingModule):
                  psf_in_tag: str,
                  res_out_tag: str,
                  flux_position_tag: str,
-<<<<<<< HEAD
-                 position: Tuple[float, float],
-=======
                  position: Tuple[int, int],
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
                  magnitude: float,
                  psf_scaling: float = -1.,
                  merit: str = 'hessian',
                  aperture: float = 0.1,
-<<<<<<< HEAD
-                 sigma: float = 0.027,
-=======
                  sigma: float = 0.0,
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
                  tolerance: float = 0.1,
                  pca_number: int = 20,
                  cent_size: float = None,
                  edge_size: float = None,
                  extra_rot: float = 0.,
-<<<<<<< HEAD
-                 residuals: str = 'mean',
-=======
                  residuals: str = 'median',
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
                  reference_in_tag: str = None) -> None:
         """
         Parameters
@@ -225,15 +203,6 @@ class SimplexMinimizationModule(ProcessingModule):
             residuals are stored for each step of the minimization. The last image contains the
             best-fit residuals.
         flux_position_tag : str
-<<<<<<< HEAD
-            Tag of the database entry with flux and position results that are written as output.
-            Each step of the minimization saves the x position (pix), y position (pix), separation
-            (arcsec), angle (deg), contrast (mag), and the function of merit. The last row of
-            values contain the best-fit results.
-        position : tuple(float, float)
-            Approximate position (x, y) of the planet (pix). This is also the location where the
-            function of merit is calculated with an aperture of radius *aperture*.
-=======
             Tag of the database entry with the flux and position results that are written as output.
             Each step of the minimization stores the x position (pix), y position (pix), separation
             (arcsec), angle (deg), contrast (mag), and the chi-square value. The last row contains
@@ -241,22 +210,12 @@ class SimplexMinimizationModule(ProcessingModule):
         position : tuple(int, int)
             Approximate position (x, y) of the planet (pix). This is also the location where the
             figure of merit is calculated within an aperture of radius ``aperture``.
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
         magnitude : float
             Approximate magnitude of the planet relative to the star.
         psf_scaling : float
             Additional scaling factor of the planet flux (e.g., to correct for a neutral density
             filter). Should be negative in order to inject negative fake planets.
         merit : str
-<<<<<<< HEAD
-            Function of merit for the minimization. Can be either *hessian*, to minimize the sum of
-            the absolute values of the determinant of the Hessian matrix, or *sum*, to minimize the
-            sum of the absolute pixel values (Wertz et al. 2017).
-        aperture : float or dict
-            Either the aperture radius (arcsec) at the position specified at *position* or a
-            dictionary with the aperture properties. See
-            :class:`~pynpoint.util.analysis.create_aperture` for details.
-=======
             Figure of merit for the minimization. Can be 'hessian', to minimize the sum of the
             absolute values of the determinant of the Hessian matrix, or 'poisson', to minimize the
             sum of the absolute pixel values, assuming a Poisson distribution for the noise
@@ -264,7 +223,6 @@ class SimplexMinimizationModule(ProcessingModule):
             and the variance of the pixels within an annulus but excluding the aperture area.
         aperture : float
             Aperture radius (arcsec) at the position specified at *position*.
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
         sigma : float
             Standard deviation (arcsec) of the Gaussian kernel which is used to smooth the images
             before the figure of merit is calculated (in order to reduce small pixel-to-pixel
@@ -286,11 +244,7 @@ class SimplexMinimizationModule(ProcessingModule):
         extra_rot : float
             Additional rotation angle of the images in clockwise direction (deg).
         residuals : str
-<<<<<<< HEAD
-            Method used for combining the residuals ('mean', 'median', 'weighted', or 'clipped').
-=======
             Method for combining the residuals ('mean', 'median', 'weighted', or 'clipped').
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
         reference_in_tag : str, None
             Tag of the database entry with the reference images that are read as input. The data of
             the ``image_in_tag`` itself is used as reference data for the PSF subtraction if set to
@@ -356,18 +310,7 @@ class SimplexMinimizationModule(ProcessingModule):
         parang = self.m_image_in_port.get_attribute('PARANG')
         pixscale = self.m_image_in_port.get_attribute('PIXSCALE')
 
-<<<<<<< HEAD
-        if isinstance(self.m_aperture, float):
-            self.m_aperture = {'type':'circular',
-                               'pos_x':self.m_position[0],
-                               'pos_y':self.m_position[1],
-                               'radius':self.m_aperture/pixscale}
-
-        elif isinstance(self.m_aperture, dict):
-            self.m_aperture['radius'] /= pixscale
-=======
         aperture = (self.m_position[1], self.m_position[0], self.m_aperture/pixscale)
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 
         self.m_sigma /= pixscale
 
@@ -388,13 +331,10 @@ class SimplexMinimizationModule(ProcessingModule):
 
         center = center_subpixel(psf)
 
-<<<<<<< HEAD
-=======
         if self.m_reference_in_port is not None and self.m_merit != 'poisson':
             raise NotImplementedError('The reference_in_tag can only be used in combination with '
                                       'the \'poisson\' figure of merit.')
 
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
         if self.m_reference_in_port is not None:
             ref_data = self.m_reference_in_port.get_all()
 
@@ -440,12 +380,7 @@ class SimplexMinimizationModule(ProcessingModule):
                                magnitude=mag,
                                psf_scaling=self.m_psf_scaling)
 
-<<<<<<< HEAD
-            mask_shape = (fake.shape[-2], fake.shape[-1])
-            mask = create_mask(mask_shape, (self.m_cent_size, self.m_edge_size))
-=======
             mask = create_mask(fake.shape[-2:], (self.m_cent_size, self.m_edge_size))
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 
             if self.m_reference_in_port is None:
                 _, im_res = pca_psf_subtraction(images=fake*mask,
@@ -469,18 +404,10 @@ class SimplexMinimizationModule(ProcessingModule):
 
             self.m_res_out_port.append(res_stack, data_dim=3)
 
-<<<<<<< HEAD
-            merit = merit_function(residuals=stack[0, ],
-                                   function=self.m_merit,
-                                   variance=('poisson', None, None),
-                                   aperture=self.m_aperture,
-                                   sigma=self.m_sigma)
-=======
             chi_square = merit_function(residuals=res_stack[0, ],
                                         merit=self.m_merit,
                                         aperture=aperture,
                                         sigma=self.m_sigma)
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 
             position = rotate_coordinates(center, (pos_y, pos_x), -self.m_extra_rot)
 
@@ -542,11 +469,7 @@ class FalsePositiveModule(ProcessingModule):
         """
         Parameters
         ----------
-<<<<<<< HEAD
-        name_in: str
-=======
         name_in : str
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
             Unique name of the module instance.
         image_in_tag : str
             Tag of the database entry with the images that are read as input.
@@ -619,19 +542,11 @@ class FalsePositiveModule(ProcessingModule):
         def _snr_optimize(arg):
             pos_x, pos_y = arg
 
-<<<<<<< HEAD
-            _, _, _, snr, _ = false_alarm(image=image,
-                                          x_pos=pos_x,
-                                          y_pos=pos_y,
-                                          size=self.m_aperture,
-                                          ignore=self.m_ignore)
-=======
             _, _, snr, _ = false_alarm(image=image,
                                        x_pos=pos_x,
                                        y_pos=pos_y,
                                        size=self.m_aperture,
                                        ignore=self.m_ignore)
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 
             return -snr
 
@@ -659,26 +574,22 @@ class FalsePositiveModule(ProcessingModule):
                                   method='SLSQP',
                                   bounds=bounds,
                                   tol=None,
-<<<<<<< HEAD
-                                  options={'ftol':self.m_tolerance})
-=======
                                   options={'ftol': self.m_tolerance})
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 
-                _, _, _, snr, fpf = false_alarm(image=image,
-                                                x_pos=result.x[0],
-                                                y_pos=result.x[1],
-                                                size=self.m_aperture,
-                                                ignore=self.m_ignore)
+                _, _, snr, fpf = false_alarm(image=image,
+                                             x_pos=result.x[0],
+                                             y_pos=result.x[1],
+                                             size=self.m_aperture,
+                                             ignore=self.m_ignore)
 
                 x_pos, y_pos = result.x[0], result.x[1]
 
             else:
-                _, _, _, snr, fpf = false_alarm(image=image,
-                                                x_pos=self.m_position[0],
-                                                y_pos=self.m_position[1],
-                                                size=self.m_aperture,
-                                                ignore=self.m_ignore)
+                _, _, snr, fpf = false_alarm(image=image,
+                                             x_pos=self.m_position[0],
+                                             y_pos=self.m_position[1],
+                                             size=self.m_aperture,
+                                             ignore=self.m_ignore)
 
                 x_pos, y_pos = self.m_position[0], self.m_position[1]
 
@@ -717,20 +628,11 @@ class MCMCsamplingModule(ProcessingModule):
                  nsteps: int = 200,
                  psf_scaling: float = -1.,
                  pca_number: int = 20,
-<<<<<<< HEAD
-                 aperture: Union[float, dict] = 0.1,
-                 mask: Tuple[float, float] = None,
-                 extra_rot: float = 0.,
-                 prior: str = 'flat',
-                 variance: str = 'poisson',
-                 residuals: str = 'mean',
-=======
                  aperture: Union[float, Tuple[int, int, float]] = 0.1,
                  mask: Tuple[float, float] = None,
                  extra_rot: float = 0.,
                  merit: str = 'gaussian',
                  residuals: str = 'median',
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
                  **kwargs: Union[float, Tuple[float, float, float]]) -> None:
         """
         Parameters
@@ -842,103 +744,6 @@ class MCMCsamplingModule(ProcessingModule):
         else:
             self.m_mask = mask
 
-<<<<<<< HEAD
-    @typechecked
-    def aperture_dict(self,
-                      images: np.ndarray) -> None:
-        """
-        Function to create or update the dictionary with aperture properties.
-
-        Parameters
-        ----------
-        images : numpy.ndarray
-            Input images.
-
-        Returns
-        -------
-        NoneType
-            None
-        """
-
-        pixscale = self.m_image_in_port.get_attribute('PIXSCALE')
-
-        if isinstance(self.m_aperture, float):
-            xy_pos = polar_to_cartesian(images, self.m_param[0]/pixscale, self.m_param[1])
-
-            self.m_aperture = {'type':'circular',
-                               'pos_x':xy_pos[0],
-                               'pos_y':xy_pos[1],
-                               'radius':self.m_aperture/pixscale,
-                               'separation':self.m_param[0]/pixscale,
-                               'angle':self.m_param[1]}
-
-        elif isinstance(self.m_aperture, dict):
-            sep_ang = cartesian_to_polar(center=center_subpixel(images),
-                                         x_pos=self.m_aperture['pos_x'],
-                                         y_pos=self.m_aperture['pos_y'])
-
-            self.m_aperture['radius'] /= pixscale
-            self.m_aperture['separation'] = sep_ang[0]
-            self.m_aperture['angle'] = sep_ang[1]
-
-    @typechecked
-    def gaussian_noise(self,
-                       images: np.ndarray,
-                       psf: np.ndarray,
-                       parang: np.ndarray,
-                       aperture: dict) -> Tuple[float, float]:
-        """
-        Function to compute the (constant) variance for the likelihood function when the
-        variance parameter is set to gaussian (see Mawet et al. 2014). The planet is first removed
-        from the dataset with the values specified as *param* in the constructor of the instance.
-
-        Parameters
-        ----------
-        images : numpy.ndarray
-            Masked input images.
-        psf : numpy.ndarray
-            PSF template.
-        parang : numpy.ndarray
-            Parallactic angles (deg).
-        aperture : dict
-            Properties of the circular aperture. The radius is recommended to be larger than or
-            equal to 0.5*lambda/D.
-
-        Returns
-        -------
-        float
-            Bias (counts).
-        float
-            Variance (counts).
-        """
-
-        pixscale = self.m_image_in_port.get_attribute('PIXSCALE')
-
-        fake = fake_planet(images=images,
-                           psf=psf,
-                           parang=parang,
-                           position=(self.m_param[0]/pixscale, self.m_param[1]),
-                           magnitude=self.m_param[2],
-                           psf_scaling=self.m_psf_scaling)
-
-        _, res_arr = pca_psf_subtraction(images=fake,
-                                         angles=-1.*parang+self.m_extra_rot,
-                                         pca_number=self.m_pca_number)
-
-        residuals = combine_residuals(method=self.m_residuals, res_rot=res_arr)
-
-        _, bias, noise, _, _ = false_alarm(image=residuals[0, ],
-                                           x_pos=aperture['pos_x'],
-                                           y_pos=aperture['pos_y'],
-                                           size=aperture['radius'],
-                                           ignore=False)
-
-        print(f'Bias [counts] = {bias}')
-        print(f'Noise [counts] = {noise}')
-
-        return bias, noise**2
-
-=======
     # @typechecked
     # def gaussian_variance(self,
     #                       images: np.ndarray,
@@ -996,7 +801,6 @@ class MCMCsamplingModule(ProcessingModule):
     #
     #     return np.var(selected)
 
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
     @typechecked
     def run(self) -> None:
         """
@@ -1051,19 +855,10 @@ class MCMCsamplingModule(ProcessingModule):
         initial[:, 1] = self.m_param[1] + np.random.normal(0, self.m_sigma[1], self.m_nwalkers)
         initial[:, 2] = self.m_param[2] + np.random.normal(0, self.m_sigma[2], self.m_nwalkers)
 
-<<<<<<< HEAD
-        if self.m_variance == 'gaussian':
-            bias, var = self.gaussian_noise(images*mask, psf, parang, self.m_aperture)
-            variance = (self.m_variance, bias, var)
-
-        else:
-            variance = (self.m_variance, None, None)
-=======
         # if self.m_merit == 'gaussian':
         #     variance = self.gaussian_variance(images*mask, psf, parang, aperture)
         # else:
         #     variance = None
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 
         sampler = emcee.EnsembleSampler(nwalkers=self.m_nwalkers,
                                         dim=ndim,
