@@ -49,10 +49,7 @@ def center_pixel(image: np.ndarray) -> Tuple[int, int]:
 
     return center
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 @typechecked
 def center_subpixel(image: np.ndarray) -> Tuple[float, float]:
     """
@@ -80,12 +77,8 @@ def center_subpixel(image: np.ndarray) -> Tuple[float, float]:
 @typechecked
 def crop_image(image: np.ndarray,
                center: Union[tuple, None],
-<<<<<<< HEAD
-               size: int) -> np.ndarray:
-=======
                size: int,
                copy: bool = True) -> np.ndarray:
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
     """
     Function to crop square images around a specified position.
 
@@ -109,11 +102,7 @@ def crop_image(image: np.ndarray,
     if center is None or (center[0] is None and center[1] is None):
         center = center_pixel(image)
 
-<<<<<<< HEAD
-        # if image.shape[-1]%2 == 0:
-=======
         # if image.shape[-1] % 2 == 0:
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
         #     warnings.warn('The image is even-size so there is not a uniquely defined pixel in '
         #                   'the center of the image. The image center is determined (with pixel '
         #                   'precision) with the pynpoint.util.image.center_pixel function.')
@@ -159,12 +148,6 @@ def rotate_images(images: np.ndarray,
 
     return im_rot
 
-<<<<<<< HEAD
-@typechecked
-def create_mask(im_shape: Tuple[int, int],
-                size: Union[Tuple[float, float], Tuple[float, None],
-                            Tuple[None, float], Tuple[None, None]]) -> np.ndarray:
-=======
 
 @typechecked
 def create_mask(im_shape: Tuple[int, int],
@@ -172,7 +155,6 @@ def create_mask(im_shape: Tuple[int, int],
                             Tuple[float, None],
                             Tuple[None, float],
                             Tuple[None, None]]) -> np.ndarray:
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
     """
     Function to create a mask for the central and outer image regions.
 
@@ -202,14 +184,8 @@ def create_mask(im_shape: Tuple[int, int],
         xx_grid, yy_grid = np.meshgrid(x_grid, y_grid)
         rr_grid = np.sqrt(xx_grid**2 + yy_grid**2)
 
-<<<<<<< HEAD
-    if size[1] is not None:
-        if size[1] > npix/2.:
-            size = (size[0], npix/2.)
-=======
         if size[0] is not None:
             mask[rr_grid < size[0]] = 0.
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 
         if size[1] is not None:
             if size[1] > npix / 2:
@@ -218,16 +194,10 @@ def create_mask(im_shape: Tuple[int, int],
 
     return mask
 
-<<<<<<< HEAD
-@typechecked
-def shift_image(image: np.ndarray,
-                shift_yx: Tuple[float, float],
-=======
 
 @typechecked
 def shift_image(image: np.ndarray,
                 shift_yx: Union[Tuple[float, float], np.ndarray],
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
                 interpolation: str,
                 mode: str = 'constant') -> np.ndarray:
     """
@@ -251,16 +221,6 @@ def shift_image(image: np.ndarray,
         Shifted image.
     """
 
-<<<<<<< HEAD
-    if interpolation == 'spline':
-        im_center = shift(image, shift_yx, order=5, mode=mode)
-
-    elif interpolation == 'bilinear':
-        im_center = shift(image, shift_yx, order=1, mode=mode)
-
-    elif interpolation == 'fft':
-        fft_shift = fourier_shift(np.fft.fftn(image), shift_yx)
-=======
     if image.ndim == 2:
         shift_val = (shift_yx[0], shift_yx[1])
     elif image.ndim == 3:
@@ -276,7 +236,6 @@ def shift_image(image: np.ndarray,
 
     elif interpolation == 'fft':
         fft_shift = fourier_shift(np.fft.fftn(image), shift_val)
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
         im_center = np.fft.ifftn(fft_shift).real
 
     else:
@@ -284,18 +243,11 @@ def shift_image(image: np.ndarray,
 
     return im_center
 
-<<<<<<< HEAD
-@typechecked
-def scale_image(image: np.ndarray,
-                scaling_x: float,
-                scaling_y: float) -> np.ndarray:
-=======
 
 @typechecked
 def scale_image(image: np.ndarray,
                 scaling_y: float,
                 scaling_x: float) -> np.ndarray:
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
     """
     Function to spatially scale an image.
 
@@ -327,18 +279,11 @@ def scale_image(image: np.ndarray,
 
     return im_scale * (sum_before / sum_after)
 
-<<<<<<< HEAD
-@typechecked
-def cartesian_to_polar(center: Tuple[float, float],
-                       x_pos: float,
-                       y_pos: float) -> Tuple[float, float]:
-=======
 
 @typechecked
 def cartesian_to_polar(center: Tuple[float, float],
                        y_pos: float,
                        x_pos: float) -> Tuple[float, float]:
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
     """
     Function to convert pixel coordinates to polar coordinates.
 
@@ -366,10 +311,7 @@ def cartesian_to_polar(center: Tuple[float, float],
 
     return sep, ang
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 @typechecked
 def polar_to_cartesian(image: np.ndarray,
                        sep: float,
@@ -441,10 +383,7 @@ def pixel_distance(im_shape: Tuple[int, int],
 
     return np.sqrt(xx_grid**2 + yy_grid**2)
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 @typechecked
 def subpixel_distance(im_shape: Tuple[int, int],
                       position: Tuple[float, float]) -> np.ndarray:
@@ -465,21 +404,12 @@ def subpixel_distance(im_shape: Tuple[int, int],
         2D array with the distances of each pixel from the provided pixel position.
     """
 
-<<<<<<< HEAD
-    if im_shape[0]%2 == 0:
-        raise ValueError('The subpixel_distance function has only been implemented for '
-                         'odd-sized images.')
-
-    y_size = (im_shape[0]-1)/2
-    x_size = (im_shape[1]-1)/2
-=======
     if im_shape[0] % 2 == 0:
         raise ValueError('The subpixel_distance function has only been implemented for '
                          'odd-sized images.')
 
     y_size = (im_shape[0] - 1) / 2
     x_size = (im_shape[1] - 1) / 2
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 
     y_grid = np.linspace(-y_size, y_size, im_shape[0])
     x_grid = np.linspace(-x_size, x_size, im_shape[1])
@@ -494,10 +424,7 @@ def subpixel_distance(im_shape: Tuple[int, int],
 
     return np.sqrt(xx_grid**2 + yy_grid**2)
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 @typechecked
 def select_annulus(image_in: np.ndarray,
                    radius_in: float,
@@ -512,11 +439,7 @@ def select_annulus(image_in: np.ndarray,
     radius_out : float
         Outer radius of the annulus (pix).
     mask_position : tuple(float, float), None
-<<<<<<< HEAD
-        Center (pix, pix) position (y, x) in of the circular region that is excluded. Not used
-=======
         Center (pix) position (y, x) in of the circular region that is excluded. Not used
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
         if set to None.
     mask_radius : float, None
         Radius (pix) of the circular region that is excluded. Not used if set to None.
@@ -524,20 +447,6 @@ def select_annulus(image_in: np.ndarray,
 
     im_shape = image_in.shape
 
-<<<<<<< HEAD
-    if im_shape[0]%2 == 0:
-        y_grid = np.linspace(-im_shape[0]/2+0.5, im_shape[0]/2-0.5, im_shape[0])
-    elif im_shape[0]%2 == 1:
-        y_grid = np.linspace(-(im_shape[0]-1)/2, (im_shape[0]-1)/2, im_shape[0])
-
-    if im_shape[1]%2 == 0:
-        x_grid = np.linspace(-im_shape[1]/2+0.5, im_shape[1]/2-0.5, im_shape[1])
-    elif im_shape[0]%2 == 1:
-        x_grid = np.linspace(-(im_shape[1]-1)/2, (im_shape[1]-1)/2, im_shape[1])
-
-    xx_grid, yy_grid = np.meshgrid(x_grid, y_grid)
-    rr_grid = np.sqrt(xx_grid**2+yy_grid**2)
-=======
     if im_shape[0] % 2 == 0:
         y_grid = np.linspace(-im_shape[0] / 2 + 0.5, im_shape[0] / 2 - 0.5, im_shape[0])
     else:
@@ -550,7 +459,6 @@ def select_annulus(image_in: np.ndarray,
 
     xx_grid, yy_grid = np.meshgrid(x_grid, y_grid)
     rr_grid = np.sqrt(xx_grid**2 + yy_grid**2)
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 
     mask = np.ones(im_shape)
 
@@ -566,10 +474,7 @@ def select_annulus(image_in: np.ndarray,
 
     return image_in[indices[0], indices[1]]
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 @typechecked
 def locate_star(image: np.ndarray,
                 center: Union[tuple, None],
@@ -605,33 +510,20 @@ def locate_star(image: np.ndarray,
         smooth = np.copy(image)
 
     else:
-<<<<<<< HEAD
-        sigma = fwhm/math.sqrt(8.*math.log(2.))
-        kernel = (fwhm*2+1, fwhm*2+1)
-=======
         sigma = fwhm / math.sqrt(8. * math.log(2.))
         kernel = (fwhm * 2 + 1, fwhm * 2 + 1)
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
         smooth = cv2.GaussianBlur(image, kernel, sigma)
 
     # argmax[0] is the y position and argmax[1] is the y position
     argmax = np.asarray(np.unravel_index(smooth.argmax(), smooth.shape))
 
     if center is not None and width is not None:
-<<<<<<< HEAD
-        argmax[0] += center[0] - (image.shape[0]-1) // 2 # y
-        argmax[1] += center[1] - (image.shape[1]-1) // 2 # x
-
-    return argmax
-
-=======
         argmax[0] += center[0] - (image.shape[0] - 1) // 2  # y
         argmax[1] += center[1] - (image.shape[1] - 1) // 2  # x
 
     return argmax
 
 
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
 @typechecked
 def rotate_coordinates(center: Tuple[float, float],
                        position: Tuple[float, float],
@@ -654,15 +546,6 @@ def rotate_coordinates(center: Tuple[float, float],
         New position (y, x).
     """
 
-<<<<<<< HEAD
-    pos_x = (position[1]-center[1])*math.cos(np.radians(angle)) - \
-            (position[0]-center[0])*math.sin(np.radians(angle))
-
-    pos_y = (position[1]-center[1])*math.sin(np.radians(angle)) + \
-            (position[0]-center[0])*math.cos(np.radians(angle))
-
-    return (center[0]+pos_y, center[1]+pos_x)
-=======
     pos_y = (position[1] - center[1]) * math.sin(np.radians(angle)) + \
             (position[0] - center[0]) * math.cos(np.radians(angle))
 
@@ -670,4 +553,3 @@ def rotate_coordinates(center: Tuple[float, float],
             (position[0] - center[0]) * math.sin(np.radians(angle))
 
     return center[0] + pos_y, center[1] + pos_x
->>>>>>> 000f32a9a521b80fa7a9595e4306172c803fe3fd
