@@ -1,5 +1,5 @@
 from pynpoint.core.processing import ProcessingModule
-from pynpoint.util.module import progress, memory_frames, locate_star
+from pynpoint.util.module import progress, memory_frames
 from pynpoint.util.image import shift_image, rotate
 
 from scipy.ndimage.filters import generic_filter, gaussian_filter
